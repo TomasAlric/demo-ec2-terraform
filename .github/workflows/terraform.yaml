@@ -72,12 +72,14 @@ jobs:
             echo "✅ Concluído: $dir"
           done
 
-      # Aprovação manual utilizando o Environment
-      - name: Await manual approval for next steps (04-07)
-        uses: peter-evans/wait-for-approval@v2
+      - name: Await Manual Approval
+        uses: trstringer/manual-approval@v1
         with:
-          environment: prod # Substitua pelo nome do seu environment
-          approval_message: "🛑 Aguardando aprovação manual para continuar com os módulos 04-07."
+          secret: ${{ secrets.GITHUB_TOKEN }}
+          approvers: TomasAlric
+          minimum-approvals: 1
+          issue-title: "Manual Approval Required for Terraform Apply"
+          issue-body: "Please approve or deny the deployment."
 
       # Executa os módulos 04 a 07 após aprovação
       - name: Run Terraform in modules 04-07
