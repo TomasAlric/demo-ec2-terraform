@@ -113,6 +113,7 @@ jobs:
           done
 
       - name: Await Manual Approval
+        if: ${{ env.skip_remaining_steps != 'true' }}     
         uses: trstringer/manual-approval@v1
         with:
           secret: ${{ secrets.GITHUB_TOKEN }}
