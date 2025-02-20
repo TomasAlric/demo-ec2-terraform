@@ -1,6 +1,24 @@
+name: "Terraform Workflow"
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+      aws-assume-role-arn:
+        required: true
+        type: string
+
+permissions:
+  id-token: write
+  contents: read
+  issues: write
+
 jobs:
   terraform:
     runs-on: ubuntu-latest
+
     defaults:
       run:
         shell: bash
@@ -34,7 +52,6 @@ jobs:
 
       # Step para o destroy de 07 a 01
       - name: Run Terraform destroy in modules 07-01
-        id: terraform-destroy
         run: |
           set -e  # Se qualquer comando falhar, o script para
 
@@ -57,7 +74,10 @@ jobs:
             done
           fi
 
-      # Executa os passos seguintes apenas se o step anterior for bem-sucedido
+          echo "⚡ Finalizando o workflow após o Terraform destroy."
+          exit 1  # Destroy feito com sucesso
+
+      # Executa os módulos 01 a 03 sem a verificação de destroy
       - name: Run Terraform in modules 01-03
         if: ${{ success() && steps.terraform-destroy.outcome != 'success' }}
         run: |
@@ -90,7 +110,7 @@ jobs:
           issue-title: "Manual Approval Required for Terraform Apply"
           issue-body: "Please approve or deny the deployment."
 
-      # Executa os módulos 04 a 07 após aprovação, se necessário
+      # Executa os módulos 04 a 07 após aprovação, sem a verificação de destroy
       - name: Run Terraform in modules 04-07
         if: ${{ success() && steps.terraform-destroy.outcome != 'success' }}
         run: |
