@@ -64,7 +64,7 @@ jobs:
               terraform plan -var-file=../inventories/${{ inputs.environment }}/terraform.tfvars -out="${{ inputs.environment }}.plan"
 
               echo "🚀 Executando Terraform Apply em $dir"
-              terraform apply -var-file=../inventories/${{ inputs.environment }}/terraform.tfvars "${{ inputs.environment }}.plan"
+              terraform apply "${{ inputs.environment }}.plan"  # Removido o -var-file aqui
             fi
 
             cd ..
