@@ -45,11 +45,12 @@ jobs:
           DESTROY=$(jq -r '.${{ inputs.environment }}' ./destroy_config.json)
           echo "destroy=$DESTROY" >> $GITHUB_ENV
 
-      - name: Run Terraform in each module
+      # Executa os módulos 01 a 03
+      - name: Run Terraform in modules 01-03
         run: |
           set -e  # Se qualquer comando falhar, o script para
 
-          for dir in 01-network 02-utils 03-security-groups 04-front-end 05-back-end 06-eip 07-storage; do
+          for dir in 01-network 02-utils 03-security-groups; do
             echo "🚀 Executando Terraform no diretório: $dir"
             cd $dir
 
@@ -64,7 +65,40 @@ jobs:
               terraform plan -var-file=../inventories/${{ inputs.environment }}/terraform.tfvars -out="${{ inputs.environment }}.plan"
 
               echo "🚀 Executando Terraform Apply em $dir"
-              terraform apply "${{ inputs.environment }}.plan"  # Removido o -var-file aqui
+              terraform apply "${{ inputs.environment }}.plan"
+            fi
+
+            cd ..
+            echo "✅ Concluído: $dir"
+          done
+
+      # Aprovação manual para continuar com os módulos 04-07
+      - name: Await approval for next steps (04-07)
+        run: |
+          echo "🛑 Aguardando aprovação manual para continuar com os módulos 04-07."
+        if: ${{ success() }}
+
+      # Executa os módulos 04 a 07 após aprovação
+      - name: Run Terraform in modules 04-07
+        run: |
+          set -e  # Se qualquer comando falhar, o script para
+
+          for dir in 04-front-end 05-back-end 06-eip 07-storage; do
+            echo "🚀 Executando Terraform no diretório: $dir"
+            cd $dir
+
+            echo "🔹 Terraform Init"
+            terraform init
+
+            if [[ "$destroy" == "true" ]]; then
+              echo "⚠️ Executando Terraform Destroy em $dir"
+              terraform destroy -var-file=../inventories/${{ inputs.environment }}/terraform.tfvars -auto-approve
+            else
+              echo "📝 Executando Terraform Plan em $dir"
+              terraform plan -var-file=../inventories/${{ inputs.environment }}/terraform.tfvars -out="${{ inputs.environment }}.plan"
+
+              echo "🚀 Executando Terraform Apply em $dir"
+              terraform apply "${{ inputs.environment }}.plan"
             fi
 
             cd ..
