@@ -79,15 +79,6 @@ jobs:
             echo "skip_remaining_steps=true" >> $GITHUB_ENV
           fi
 
-      # Verifica se o "terraform-destroy" foi executado com sucesso
-      - name: Check if Terraform Destroy ran
-        id: check-destroy
-        run: |
-          if [[ "${{ env.skip_remaining_steps }}" == "true" ]]; then
-            echo "⚡ Terraform destroy foi executado, interrompendo o fluxo."
-            exit 0  # Interrompe o workflow
-          fi
-
       # Executa os módulos 01 a 03, se o Terraform Destroy não for executado
       - name: Run Terraform in modules 01-03
         if: ${{ env.skip_remaining_steps != 'true' }}
