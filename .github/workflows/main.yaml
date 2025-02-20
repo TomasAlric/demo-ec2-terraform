@@ -1,0 +1,17 @@
+name: "PROD DEPLOY"
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  terraform:
+    uses: ./.github/workflows/terraform.yaml
+    with:
+      environment: "prod"
+      aws-assume-role-arn: ${{ secrets.AWS_ASSUME_ROLE_ARN_PROD }}

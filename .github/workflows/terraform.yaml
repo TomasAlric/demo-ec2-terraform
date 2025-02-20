@@ -1,0 +1,67 @@
+name: "Terraform Workflow"
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+      aws-assume-role-arn:
+        required: true
+        type: string
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.9.8
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ inputs.aws-assume-role-arn }}
+          role-session-name: GitHubActions-to-AWS-FederatedOIDC
+          aws-region: "us-east-1"
+
+      - name: Read destroy configuration
+        id: read-destroy-config
+        run: |
+          DESTROY=$(jq -r '.${{ inputs.environment }}' ./destroy_config.json)
+          echo "destroy=$DESTROY" >> $GITHUB_ENV
+
+      - name: Run Terraform in each module
+        run: |
+          set -e  # Se qualquer comando falhar, o script para
+
+          for dir in 01-network 02-utils 03-security-groups 04-front-end 05-back-end 06-eip 07-storage; do
+            echo "🚀 Executando Terraform no diretório: $dir"
+            cd $dir
+
+            echo "🔹 Terraform Init"
+            terraform init
+
+            if [[ "$destroy" == "true" ]]; then
+              echo "⚠️ Executando Terraform Destroy em $dir"
+              terraform destroy -var-file=../inventories/${{ inputs.environment }}/terraform.tfvars -auto-approve
+            else
+              echo "📝 Executando Terraform Plan em $dir"
+              terraform plan -var-file=../inventories/${{ inputs.environment }}/terraform.tfvars -out="${{ inputs.environment }}.plan"
+
+              echo "🚀 Executando Terraform Apply em $dir"
+              terraform apply -var-file=../inventories/${{ inputs.environment }}/terraform.tfvars "${{ inputs.environment }}.plan"
+            fi
+
+            cd ..
+            echo "✅ Concluído: $dir"
+          done
