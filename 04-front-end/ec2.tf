@@ -1,3 +1,7 @@
+resource "random_id" "frontend_id" {
+  byte_length = 4  # Tamanho do ID gerado (pode ser ajustado)
+}
+
 resource "aws_instance" "frontend" {
   ami                  = data.aws_ami.linux.id
   instance_type        = "t3.small"
@@ -5,6 +9,6 @@ resource "aws_instance" "frontend" {
   security_groups      = [local.frontend_sg_id]
 
   tags = {
-    Name = "revolution-frontend"
+    Name = "revolution-frontend-${random_id.frontend_id.hex}"
   }
 }
