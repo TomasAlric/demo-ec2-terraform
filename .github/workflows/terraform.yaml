@@ -50,6 +50,30 @@ jobs:
           DESTROY=$(jq -r '.${{ inputs.environment }}' ./destroy_config.json)
           echo "destroy=$DESTROY" >> $GITHUB_ENV
 
+      # Step para o destroy de 07 a 01
+      - name: Run Terraform destroy in modules 07-01
+        run: |
+          set -e  # Se qualquer comando falhar, o script para
+          
+          if [[ "$destroy" == "true" ]]; then
+            # Ordem dos módulos para destroy (do 07 ao 01)
+            modules=("07-storage" "06-eip" "05-back-end" "04-front-end" "03-security-groups" "02-utils" "01-network")
+            
+            for dir in "${modules[@]}"; do
+              echo "🚀 Executando Terraform Destroy no diretório: $dir"
+              cd $dir
+
+              echo "🔹 Terraform Init"
+              terraform init
+
+              echo "⚠️ Executando Terraform Destroy em $dir"
+              terraform destroy -var-file=../inventories/${{ inputs.environment }}/terraform.tfvars -auto-approve
+
+              cd ..
+              echo "✅ Concluído: $dir"
+            done
+          fi    
+
       # Executa os módulos 01 a 03
       - name: Run Terraform in modules 01-03
         run: |
