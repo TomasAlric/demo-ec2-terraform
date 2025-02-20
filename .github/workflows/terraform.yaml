@@ -111,7 +111,7 @@ jobs:
           approvers: TomasAlric
           minimum-approvals: 1
           issue-title: "Manual Approval Required for Terraform Apply"
-          issue-body: "Please approve or deny the deployment."
+          issue-body: "Antes de aprovar, certifique-se de que os segredos foram cadastrados na AWS. Caso contrário, o deploy poderá falhar. \n\nAprovar ou negar a implantação."
 
       # Executa os módulos 04 a 07 após aprovação, se necessário
       - name: Run Terraform in modules 04-07

@@ -1,5 +1,5 @@
 resource "random_id" "frontend_id" {
-  byte_length = 4  # Tamanho do ID gerado (pode ser ajustado)
+  byte_length = 4 
 }
 
 resource "aws_instance" "frontend" {
