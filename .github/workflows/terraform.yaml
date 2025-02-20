@@ -34,6 +34,11 @@ jobs:
           role-session-name: GitHubActions-to-AWS-FederatedOIDC
           aws-region: "us-east-1"
 
+      - name: Debug inputs
+        run: |
+          echo "Environment: ${{ inputs.environment }}"
+          echo "AWS Assume Role ARN: ${{ inputs.aws-assume-role-arn }}"
+
       - name: Read destroy configuration
         id: read-destroy-config
         run: |
