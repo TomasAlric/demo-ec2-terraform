@@ -72,7 +72,7 @@ resource "aws_subnet" "revolution_app_subnet_private_1c" {
 # Database Subnets
 resource "aws_subnet" "revolution_database_subnet_private_1a" {
   vpc_id            = aws_vpc.revolution_vpc.id
-  cidr_block        = cidrsubnet(var.cidr_block, 8, 7)
+  cidr_block        = cidrsubnet("10.0.0.0/16", 8, 7)
   availability_zone = "${data.aws_region.current.name}a"
 
   tags = merge(
@@ -83,7 +83,7 @@ resource "aws_subnet" "revolution_database_subnet_private_1a" {
 
 resource "aws_subnet" "revolution_database_subnet_private_1b" {
   vpc_id            = aws_vpc.revolution_vpc.id
-  cidr_block        = cidrsubnet(var.cidr_block, 8, 8)
+  cidr_block        = cidrsubnet("10.0.0.0/16", 8, 8)
   availability_zone = "${data.aws_region.current.name}b"
 
   tags = merge(
