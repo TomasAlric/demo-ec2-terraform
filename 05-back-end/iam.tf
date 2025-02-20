@@ -1,5 +1,5 @@
 resource "aws_iam_role" "ec2_ssm_ecr_role" {
-  name = "backend-revolution-ssm-ecr-role"
+  name = "backend-revolution-role"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -16,7 +16,7 @@ resource "aws_iam_role" "ec2_ssm_ecr_role" {
 }
 
 resource "aws_iam_policy" "ssm_policy" {
-  name        = "SSMPolicy"
+  name        = "RevolutionSSMPolicy"
   description = "Permissões para usar o SSM e o Session Manager"
 
   policy = jsonencode({

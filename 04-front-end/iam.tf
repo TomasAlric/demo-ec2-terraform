@@ -1,5 +1,5 @@
 resource "aws_iam_role" "ec2_frontend_role" {
-  name = "ec2-ssm-ecr-role"
+  name = "frontend-revolution-ec2-role"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -16,7 +16,7 @@ resource "aws_iam_role" "ec2_frontend_role" {
 }
 
 resource "aws_iam_policy" "s3_policy" {
-  name        = "S3Policy"
+  name        = "Revolution-S3-Policy"
   description = "Permissões para acessar objetos no S3"
 
   policy = jsonencode({
@@ -40,7 +40,7 @@ resource "aws_iam_policy" "s3_policy" {
 }
 
 resource "aws_iam_policy" "cloudwatch_policy" {
-  name        = "CloudWatchPolicy"
+  name        = "Revolution-S3CloudWatchPolicy"
   description = "Permissão para enviar logs para o CloudWatch"
 
   policy = jsonencode({
