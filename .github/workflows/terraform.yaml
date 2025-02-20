@@ -9,9 +9,10 @@ on:
       aws-assume-role-arn:
         required: true
         type: string
-
+ 
 permissions:
-  issues: write 
+  contents: read
+  issues: write  
 
 jobs:
   terraform:
