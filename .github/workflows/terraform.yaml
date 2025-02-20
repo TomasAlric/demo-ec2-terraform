@@ -74,6 +74,9 @@ jobs:
             done
           fi
 
+          echo "⚡ Finalizando o workflow após o Terraform destroy."
+          exit 0  # Finaliza o workflow com sucesso
+
       # Executa os módulos 01 a 03 sem a verificação de destroy
       - name: Run Terraform in modules 01-03
         run: |
