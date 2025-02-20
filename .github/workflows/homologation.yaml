@@ -1,4 +1,4 @@
-name: "DEPLOY DEV"
+name: "DEPLOY HOM"
 
 on:
   push:
@@ -13,5 +13,5 @@ jobs:
   terraform:
     uses: ./.github/workflows/terraform.yaml
     with:
-      environment: "dev"
+      environment: "hom"
       aws-assume-role-arn: "123"
