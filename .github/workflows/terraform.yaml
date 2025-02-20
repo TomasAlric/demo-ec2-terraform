@@ -9,11 +9,11 @@ on:
       aws-assume-role-arn:
         required: true
         type: string
- 
+
 permissions:
   id-token: write
   contents: read
-  issues: write  
+  issues: write
 
 jobs:
   terraform:
@@ -54,7 +54,7 @@ jobs:
       - name: Run Terraform destroy in modules 07-01
         run: |
           set -e  # Se qualquer comando falhar, o script para
-          
+
           if [[ "$destroy" == "true" ]]; then
             # Ordem dos módulos para destroy (do 07 ao 01)
             modules=("07-storage" "06-eip" "05-back-end" "04-front-end" "03-security-groups" "02-utils" "01-network")
@@ -72,9 +72,9 @@ jobs:
               cd ..
               echo "✅ Concluído: $dir"
             done
-          fi    
+          fi
 
-      # Executa os módulos 01 a 03
+      # Executa os módulos 01 a 03 sem a verificação de destroy
       - name: Run Terraform in modules 01-03
         run: |
           set -e  # Se qualquer comando falhar, o script para
@@ -86,16 +86,12 @@ jobs:
             echo "🔹 Terraform Init"
             terraform init
 
-            if [[ "$destroy" == "true" ]]; then
-              echo "⚠️ Executando Terraform Destroy em $dir"
-              terraform destroy -var-file=../inventories/${{ inputs.environment }}/terraform.tfvars -auto-approve
-            else
-              echo "📝 Executando Terraform Plan em $dir"
-              terraform plan -var-file=../inventories/${{ inputs.environment }}/terraform.tfvars -out="${{ inputs.environment }}.plan"
+            # Sempre executa Terraform Plan e Apply
+            echo "📝 Executando Terraform Plan em $dir"
+            terraform plan -var-file=../inventories/${{ inputs.environment }}/terraform.tfvars -out="${{ inputs.environment }}.plan"
 
-              echo "🚀 Executando Terraform Apply em $dir"
-              terraform apply "${{ inputs.environment }}.plan"
-            fi
+            echo "🚀 Executando Terraform Apply em $dir"
+            terraform apply "${{ inputs.environment }}.plan"
 
             cd ..
             echo "✅ Concluído: $dir"
@@ -110,7 +106,7 @@ jobs:
           issue-title: "Manual Approval Required for Terraform Apply"
           issue-body: "Please approve or deny the deployment."
 
-      # Executa os módulos 04 a 07 após aprovação
+      # Executa os módulos 04 a 07 após aprovação, sem a verificação de destroy
       - name: Run Terraform in modules 04-07
         run: |
           set -e  # Se qualquer comando falhar, o script para
@@ -122,16 +118,12 @@ jobs:
             echo "🔹 Terraform Init"
             terraform init
 
-            if [[ "$destroy" == "true" ]]; then
-              echo "⚠️ Executando Terraform Destroy em $dir"
-              terraform destroy -var-file=../inventories/${{ inputs.environment }}/terraform.tfvars -auto-approve
-            else
-              echo "📝 Executando Terraform Plan em $dir"
-              terraform plan -var-file=../inventories/${{ inputs.environment }}/terraform.tfvars -out="${{ inputs.environment }}.plan"
+            # Sempre executa Terraform Plan e Apply
+            echo "📝 Executando Terraform Plan em $dir"
+            terraform plan -var-file=../inventories/${{ inputs.environment }}/terraform.tfvars -out="${{ inputs.environment }}.plan"
 
-              echo "🚀 Executando Terraform Apply em $dir"
-              terraform apply "${{ inputs.environment }}.plan"
-            fi
+            echo "🚀 Executando Terraform Apply em $dir"
+            terraform apply "${{ inputs.environment }}.plan"
 
             cd ..
             echo "✅ Concluído: $dir"
