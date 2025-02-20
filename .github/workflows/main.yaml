@@ -10,6 +10,12 @@ permissions:
   contents: read
 
 jobs:
+  debug:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check secrets
+        run: echo "${{ secrets.AWS_ASSUME_ROLE_ARN_PROD }}"
+
   terraform:
     uses: ./.github/workflows/terraform.yaml
     with:
