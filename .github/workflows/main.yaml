@@ -14,5 +14,4 @@ jobs:
     uses: ./.github/workflows/terraform.yaml
     with:
       environment: "prod"
-    secrets:
-      AWS_ASSUME_ROLE_ARN: ${{ secrets.AWS_ASSUME_ROLE_ARN_PROD }}
+      aws-assume-role-arn: ${{ secrets.AWS_ASSUME_ROLE_ARN_PROD }}
